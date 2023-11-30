@@ -7,9 +7,12 @@
 #include <assert.h>
 #include <mpi.h>
 
-#define POINTS_PER_PROCESS 1000 // Number of processes
-#define K 3                     // Number of cluserts
+#define NUMBER_OF_POINTS 10000 // Number of points
 #define D 3                     // Dimensions of data
+#define K 4                     // Number of cluserts
+
+
+#define POINTS_PER_PROCESS NUMBER_OF_POINTS / D // Number of processes
 
 // Function prototypes
 float *create_rand_data(int num_points, int num_proc)
