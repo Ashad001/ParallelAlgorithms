@@ -20,7 +20,7 @@ float *create_rand_data(int num_points, int num_proc)
     float *data = (float *)malloc(num_points * sizeof(float));
     FILE *fp;
     char filename[100];
-    sprintf(filename, "./data/input/data_%d_%d_%d%s", num_proc, (num_points / num_proc) / D, D, ".csv");
+    sprintf(filename, "./data/input/mpi_data_%d_%d_%d%s", num_proc, (num_points / num_proc) / D, D, ".csv");
     fp = fopen(filename, "w");
 
     for (int i = 0; i < num_points; i++)
@@ -187,7 +187,7 @@ int main(int argc, char const *argv[])
         float *point = all_points;
         FILE *fp;
         char filename[100];
-        sprintf(filename, "./data/output/labels_%d_%d_%d%s", num_process, POINTS_PER_PROCESS, D, ".csv");
+        sprintf(filename, "./data/output/mpi_labels_%d_%d_%d%s", num_process, POINTS_PER_PROCESS, D, ".csv");
         fp = fopen(filename, "w");
         for (int i = 0; i < num_process * POINTS_PER_PROCESS; i++, point += D)
         {
