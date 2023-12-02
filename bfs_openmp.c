@@ -4,9 +4,35 @@
 
 #define MAX_VERTICES 100
 
-void parallelBFS(int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int startVertex) {
+void readGraphFromCSV(const char *filename, int graph[MAX_VERTICES][MAX_VERTICES], int vertices)
+{
+    FILE *file = fopen(filename, "r");
+    if (file == NULL)
+    {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < vertices; ++i)
+    {
+        for (int j = 0; j < vertices; ++j)
+        {
+            if (fscanf(file, "%d,", &graph[i][j]) != 1)
+            {
+                perror("Error reading from file");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    fclose(file);
+}
+
+void parallelBFS(int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int startVertex)
+{
     int *visited = (int *)malloc(vertices * sizeof(int));
-    for (int i = 0; i < vertices; ++i) {
+    for (int i = 0; i < vertices; ++i)
+    {
         visited[i] = 0;
     }
 
@@ -16,27 +42,32 @@ void parallelBFS(int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int startV
 
     visited[startVertex] = 1;
 
-    #pragma omp parallel
+#pragma omp parallel
     {
         int tid = omp_get_thread_num();
         int num_threads = omp_get_num_threads();
 
-        for (int level = 0; level < vertices; ++level) {
-            #pragma omp for
-            for (int i = tid; i < vertices; i += num_threads) {
-                if (visited[i] == 1) {
+        for (int level = 0; level < vertices; ++level)
+        {
+#pragma omp for
+            for (int i = 0; i < vertices; ++i)
+            {
+                if (visited[i] == 1)
+                {
                     // Process vertex i
                     printf("Thread %d visits vertex %d at level %d\n", tid, i, level);
 
-                    // Explore neighbors
-                    for (int j = 0; j < vertices; ++j) {
-                        if (graph[i][j] == 1 && visited[j] == 0) {
+#pragma omp parallel for
+                    for (int j = 0; j < vertices; ++j)
+                    {
+                        if (graph[i][j] == 1 && visited[j] == 0)
+                        {
                             visited[j] = 1;
                         }
                     }
                 }
             }
-            #pragma omp barrier
+#pragma omp barrier
         }
     }
 
@@ -46,18 +77,16 @@ void parallelBFS(int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int startV
 
     free(visited);
 }
-
-int main() {
+int main()
+{
     int vertices = 6;
-    int graph[MAX_VERTICES][MAX_VERTICES] = {
-        {0, 1, 1, 0, 0, 0},
-        {1, 0, 0, 1, 1, 0},
-        {1, 0, 0, 0, 1, 1},
-        {0, 1, 0, 0, 0, 0},
-        {0, 1, 1, 0, 0, 1},
-        {0, 0, 1, 0, 1, 0}
-    };
-    int startVertex = 0;
+    int graph[MAX_VERTICES][MAX_VERTICES];
+
+    const char *filename = "./data/matrices/mat4.csv";
+
+    readGraphFromCSV(filename, graph, vertices);
+
+    int startVertex = 1;
 
     parallelBFS(graph, vertices, startVertex);
 

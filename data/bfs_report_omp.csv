@@ -1,0 +1,5 @@
+Vertices, threads, computation time (sec)
+6, 4, 0.014
+8, 4, 0.007 
+10, 4, 0.006
+30, 4, 0.004
