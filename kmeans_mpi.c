@@ -199,6 +199,16 @@ int main(int argc, char const *argv[])
             fprintf(fp, "%f,%f,%f,%d\n", point[0], point[1], point[2], all_labels[i]);
         }
     }
+
+    free(all_points);
+    free(sums);
+    free(counts);
+    free(labels);
+    free(centroids);
+    free(all_sums);
+    free(all_counts);
+    free(all_labels);
+
     MPI_Finalize();
 
     return 0;

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <omp.h>
 
 #define NUMBER_OF_POINTS 10000 // Number of points
 #define D 3                    // Dimensions of data
@@ -9,26 +8,26 @@
 
 float *create_rand_data(int num_points)
 {
-    float *data = (float *)malloc(num_points * D * sizeof(float));
+    float *data = (float *)malloc(num_points * sizeof(float));
     FILE *fp;
     char filename[100];
-    sprintf(filename, "./data/input/omp_data_%d_%d%s", num_points, D, ".csv");
+    sprintf(filename, "./data/input/sequantial_data_%d_%d_%d%s", (num_points / D), D, ".csv");
     fp = fopen(filename, "w");
 
     for (int i = 0; i < num_points; i++)
     {
-        for (int j = 0; j < D; j++)
-        {
-            data[i * D + j] = (float)rand() / (float)RAND_MAX;
-            fprintf(fp, "%f", data[i * D + j]);
+        data[i] = (float)rand() / (float)RAND_MAX;
+        fprintf(fp, "%f", data[i]);
 
-            if (j < D - 1)
-            {
-                fprintf(fp, ",");
-            }
+        if (i < num_points - 1)
+        {
+            fprintf(fp, ",");
         }
 
-        fprintf(fp, "\n");
+        if ((i + 1) % D == 0 && i < num_points - 1)
+        {
+            fprintf(fp, "\n");
+        }
     }
 
     fclose(fp);
@@ -50,31 +49,22 @@ int assign_point(float *point, float *centroids, int k, int dim)
     int cluster = 0;
     float dist = distance(point, centroids, dim);
     float *centroid = centroids + dim;
-
-#pragma omp parallel for
-    for (int c = 1; c < k; c++)
+    for (int c = 1; c < k; c++, centroid += dim)
     {
         float temp_dist = distance(point, centroid, dim);
         if (temp_dist < dist)
         {
-#pragma omp critical
-            {
-                dist = temp_dist;
-                cluster = c;
-            }
+            dist = temp_dist;
+            cluster = c;
         }
-        centroid += dim;
     }
-
     return cluster;
 }
 
 void add_point(float *point, float *sum, int dim)
 {
-#pragma omp parallel for
     for (int i = 0; i < dim; i++)
     {
-#pragma omp atomic
         sum[i] += point[i];
     }
 }
@@ -101,15 +91,14 @@ int main()
 
     float *points, *sums, *centroids;
     int *counts, *labels;
-    points = (float *)malloc(NUMBER_OF_POINTS * D * sizeof(float));
-    sums = (float *)malloc(K * D * sizeof(float));
-    counts = (int *)malloc(K * sizeof(int));
-    labels = (int *)malloc(NUMBER_OF_POINTS * sizeof(int));
-    centroids = (float *)malloc(K * D * sizeof(float));
+    points = malloc(NUMBER_OF_POINTS * D * sizeof(float));
+    sums = malloc(K * D * sizeof(float));
+    counts = malloc(K * sizeof(int));
+    labels = malloc(NUMBER_OF_POINTS * sizeof(int));
+    centroids = malloc(K * D * sizeof(float));
 
     points = create_rand_data(NUMBER_OF_POINTS);
 
-#pragma omp parallel for
     for (int i = 0; i < K * D; i++)
     {
         centroids[i] = points[i];
@@ -119,53 +108,42 @@ int main()
 
     while (norm > 0.0001)
     {
-#pragma omp parallel for
         for (int i = 0; i < K * D; i++)
         {
             sums[i] = 0.0;
         }
-
-#pragma omp parallel for
         for (int i = 0; i < K; i++)
         {
             counts[i] = 0;
         }
-
-#pragma omp parallel for
-        for (int i = 0; i < NUMBER_OF_POINTS; i++)
+        float *point = points;
+        for (int i = 0; i < NUMBER_OF_POINTS; i++, point += D)
         {
-            int label = assign_point(points + i * D, centroids, K, D);
-#pragma omp atomic write
-            labels[i] = label;
-#pragma omp atomic
+            int label = assign_point(point, centroids, K, D);
             counts[label]++;
-            add_point(points + i * D, sums + label * D, D);
+            add_point(point, &sums[label * D], D);
+            labels[i] = label;
         }
 
-#pragma omp parallel for
         for (int i = 0; i < K * D; i++)
         {
             sums[i] = sums[i] / counts[i / D];
         }
-
         norm = distance(sums, centroids, K * D);
         printf("Normalized distance: %f\n", norm);
 
-#pragma omp parallel for
         for (int i = 0; i < K * D; i++)
         {
             centroids[i] = sums[i];
         }
-
         print_centroids(centroids, K, D);
     }
 
     // Save labels in labels csv
     FILE *fp;
     char filename[100];
-    sprintf(filename, "./data/output/omp_labels_%d_%d%s", NUMBER_OF_POINTS, D, ".csv");
+    sprintf(filename, "./data/output/sequential_labels_%d_%d%s", NUMBER_OF_POINTS, D, ".csv");
     fp = fopen(filename, "w");
-
     for (int i = 0; i < NUMBER_OF_POINTS; i++)
     {
         for (int j = 0; j < D; j++)
@@ -176,7 +154,6 @@ int main()
         fprintf(fp, "%d\n", labels[i]);
     }
 
-    fclose(fp);
     free(points);
     free(sums);
     free(counts);
