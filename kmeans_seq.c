@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <omp.h>
 
-#define NUMBER_OF_POINTS 10000 // Number of points
-#define D 3                    // Dimensions of data
-#define K 4                    // Number of clusters
+#define NUMBER_OF_POINTS 2000 // Number of points
+#define D 4                    // Dimensions of data
+#define K 5                    // Number of clusters
 
 float *create_rand_data(int num_points)
 {
@@ -105,6 +106,7 @@ int main()
     }
 
     float norm = 1.0;
+    double start_time = omp_get_wtime();
 
     while (norm > 0.0001)
     {
@@ -139,6 +141,10 @@ int main()
         print_centroids(centroids, K, D);
     }
 
+    double end_time = omp_get_wtime();
+    double elapsed_time = end_time - start_time;
+    printf("Time taken: %f seconds\n", elapsed_time);
+
     // Save labels in labels csv
     FILE *fp;
     char filename[100];
@@ -150,7 +156,6 @@ int main()
         {
             fprintf(fp, "%f,", points[i * D + j]);
         }
-        printf("Label: %d\n", labels[i]);
         fprintf(fp, "%d\n", labels[i]);
     }
 

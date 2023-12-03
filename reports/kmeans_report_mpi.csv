@@ -1,0 +1,11 @@
+datapoints, dimensions, clusters, processes, communication_time, computation_time, total_time
+100, 3, 3, 2, 0.000021 seconds, 0.000835 seconds, 0.003242 seconds
+1000, 3, 3, 2, 0.002796 seconds, 0.000034 seconds, 0.008025 seconds
+2000, 4, 5, 4, 0.066251 seconds, 0.000271 seconds, 0.124331 seconds
+10000, 3, 4, 2, 0.128845 seconds, 0.17077 seconds, 0.292741 seconds
+100000, 5, 7, 4, 1.727366 seconds, 0.118072 seconds, 3.577593 seconds
+100000, 5, 7, 6, 1.320635 seconds, 0.027296 seconds, 3.787768 seconds
+200000, 6, 10, 6, 6.701579 seconds, 0.032482 seconds, 9.955053 seconds
+1000000, 6, 12, 8, 34.5911 seconds, 3.03045 seconds, 60.9705 seconds 
+
+

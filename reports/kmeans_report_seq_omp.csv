@@ -1,0 +1,11 @@
+Code, datapoints, dimensions, clusters, time
+sequential, 100, 3, 3, 0.005seconds
+sequential, 1000, 3, 3, 0.002seconds
+sequential, 2000, 4, 5, 0.001seconds
+sequential, 10000, 3, 3, NaN
+sequential, 100000, 5, 7, NaN
+openmp, 100, 3, 3, 0.065seconds
+openmp, 1000, 3, 4, 0.505seconds
+openmp, 2000, 4, 5, 0.953seconds
+openmp, 10000, 3, 4, 2.597seconds
+openmp, 100000, 5, 7, 20.111seconds

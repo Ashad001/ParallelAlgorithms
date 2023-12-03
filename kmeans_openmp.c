@@ -3,9 +3,9 @@
 #include <math.h>
 #include <omp.h>
 
-#define NUMBER_OF_POINTS 10000 // Number of points
-#define D 3                    // Dimensions of data
-#define K 4                    // Number of clusters
+#define NUMBER_OF_POINTS 2000 // Number of points
+#define D 4                    // Dimensions of data
+#define K 5                    // Number of clusters
 
 float *create_rand_data(int num_points)
 {
@@ -108,7 +108,7 @@ int main()
     centroids = (float *)malloc(K * D * sizeof(float));
 
     points = create_rand_data(NUMBER_OF_POINTS);
-
+    double starttime = omp_get_wtime();
 #pragma omp parallel for
     for (int i = 0; i < K * D; i++)
     {
@@ -149,7 +149,7 @@ int main()
         }
 
         norm = distance(sums, centroids, K * D);
-        printf("Normalized distance: %f\n", norm);
+        // printf("Normalized distance: %f\n", norm);
 
 #pragma omp parallel for
         for (int i = 0; i < K * D; i++)
@@ -157,8 +157,11 @@ int main()
             centroids[i] = sums[i];
         }
 
-        print_centroids(centroids, K, D);
+        // print_centroids(centroids, K, D);
     }
+
+    double endtime = omp_get_wtime();
+    printf("Time taken: %f seconds\n", endtime - starttime);
 
     // Save labels in labels csv
     FILE *fp;
@@ -172,7 +175,6 @@ int main()
         {
             fprintf(fp, "%f,", points[i * D + j]);
         }
-        printf("Label: %d\n", labels[i]);
         fprintf(fp, "%d\n", labels[i]);
     }
 

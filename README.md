@@ -1,62 +1,17 @@
-# Parallel BFS and K-Means Clustering with OpenMP and MPI
+# Parallel Computing Project
 
 ## Overview
+This project explores the parallelization of K-means clustering and Breadth-First Search (BFS) algorithms using OpenMP and MPI. The implementation and analysis were conducted on a laptop with an Intel Core i5-1035G4 processor, 15.6 GB RAM, running Windows, utilizing Visual Studio Code and MPI SDKs for C/C++.
 
-This project demonstrates parallel implementations of Breadth-First Search (BFS) and K-Means Clustering algorithms in C using OpenMP and MPI. The combination of OpenMP and MPI allows for efficient parallelization on shared-memory (multi-core) and distributed-memory (cluster) systems.
-
-## Table of Contents
-
-- [Parallel BFS and K-Means Clustering with OpenMP and MPI](#parallel-bfs-and-k-means-clustering-with-openmp-and-mpi)
-  - [Overview](#overview)
-  - [Table of Contents](#table-of-contents)
-  - [Prerequisites](#prerequisites)
-  - [Building](#building)
-  - [Usage](#usage)
-  - [Breadth-First Search](#breadth-first-search)
-  - [K-Means Clustering](#k-means-clustering)
-  - [License](#license)
-
-## Prerequisites
-
-Ensure the following dependencies are installed:
-
-- OpenMP: Compiler with OpenMP support (e.g., GCC)
-- MPI: MPI library (e.g., Open MPI)
-
-## Building
-
-Compile the project using the build task:
-
-```
-terminal -> Run Build Task
-```
-
-This will generate executable files.
-
-NOTE: Make sure you have vscode with openmp and mpi support
+## Contents
+- **.kmeans_openmp:** Source code for K-means clustering with OpenMP.
+- **.kmeans_mpi:** Source code for K-means clustering with MPI.
+- **.bfs_openmp:** Source code for BFS with OpenMP.
+- **.bfs_mpi:** Source code for BFS with MPI.
+- **./data:** Results from experiments with varying data sizes.
 
 ## Usage
-
-Run the programs using MPI commands. For example:
-
-```bash
-mpiexec -np 8 ./bfs_mpi.exe
-mpiexec -np 4 ./kmeans_mpi.exe
-```
-
-Adjust the number of processes (`-np`) based on your computing environment.
-
-## Breadth-First Search
-
-The BFS algorithm explores the given graph in parallel using MPI. The input graph should be in a specific format (e.g., adjacency matrix) as specified.
-
-
-## K-Means Clustering
-
-The K-Means algorithm performs parallel clustering of data using MPI. The input data should be in a suitable format (e.g., space-separated values) as specified in `input_data.txt`.
-
-
-## License
-
-This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the code according to the terms of the license.
-
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/your-username/parallel-computing-project.git
+   cd parallel-computing-project

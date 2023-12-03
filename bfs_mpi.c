@@ -5,6 +5,30 @@
 #define MAX_VERTICES 500
 #define ROOT_PROCESS 0
 
+void readGraphFromCSV(const char *filename, int graph[MAX_VERTICES][MAX_VERTICES], int vertices)
+{
+    FILE *file = fopen(filename, "r");
+    if (file == NULL)
+    {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < vertices; ++i)
+    {
+        for (int j = 0; j < vertices; ++j)
+        {
+            if (fscanf(file, "%d,", &graph[i][j]) != 1)
+            {
+                perror("Error reading from file");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    fclose(file);
+}
+
 void parallelBFS(int rank, int size, int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int startVertex) {
     int *visited = (int *)malloc(vertices * sizeof(int));
     for (int i = 0; i < vertices; ++i) {
@@ -49,17 +73,18 @@ void parallelBFS(int rank, int size, int graph[MAX_VERTICES][MAX_VERTICES], int 
     free(visited);
 }
 
+
+
+
 int main(int argc, char *argv[]) {
     int rank, size;
     int vertices = 6;
-    int graph[MAX_VERTICES][MAX_VERTICES] = {
-        {0, 1, 1, 0, 0, 0},
-        {1, 0, 0, 1, 1, 0},
-        {1, 0, 0, 0, 1, 1},
-        {0, 1, 0, 0, 0, 0},
-        {0, 1, 1, 0, 0, 1},
-        {0, 0, 1, 0, 1, 0}
-    };
+    int graph[MAX_VERTICES][MAX_VERTICES];
+
+    const char *filename = "./data/matrices/mat3.csv";
+
+    readGraphFromCSV(filename, graph, vertices);
+
     int startVertex = 0;
 
     MPI_Init(&argc, &argv);
